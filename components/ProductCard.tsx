@@ -1,14 +1,6 @@
 import { Flame, ImageIcon, Minus, Plus, Star } from "lucide-react";
 
-export default function ProductCard({
-  name = "Paneer Tikka",
-  description = "Char-grilled cottage cheese, marinated in smoky spices.",
-  isVeg = true,
-}: {
-  name?: string;
-  description?: string;
-  isVeg?: boolean;
-}) {
+export default function ProductCard({product}: {product:any;}) {
   return (
     <div className="group overflow-hidden rounded-2xl border border-black/[.06] bg-white shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-xl dark:border-white/[.08] dark:bg-neutral-900">
       <div className="relative h-40 overflow-hidden bg-gradient-to-br from-neutral-100 to-neutral-200 dark:from-neutral-800 dark:to-neutral-900">
@@ -18,10 +10,10 @@ export default function ProductCard({
 
         <span
           className={`absolute left-3 top-3 flex h-5 w-5 items-center justify-center rounded-md border-2 bg-white shadow-sm ${
-            isVeg ? "border-green-600" : "border-red-600"
+            product?.is_veg ? "border-green-600" : "border-red-600"
           }`}
         >
-          {isVeg ? (
+          {product?.is_veg ? (
             <span className="h-2 w-2 rounded-full bg-green-600" />
           ) : (
             <span
@@ -39,7 +31,7 @@ export default function ProductCard({
       <div className="p-4">
         <div className="flex items-start justify-between gap-2">
           <h3 className="font-semibold text-neutral-900 dark:text-neutral-50">
-            {name}
+            {product?.name}
           </h3>
           <span className="flex shrink-0 items-center gap-0.5 rounded-md bg-green-50 px-1.5 py-0.5 text-xs font-semibold text-green-700 dark:bg-green-950 dark:text-green-400">
             <Star className="h-3 w-3 fill-green-700 dark:fill-green-400" />
@@ -48,16 +40,20 @@ export default function ProductCard({
         </div>
 
         <p className="mt-1 line-clamp-2 text-sm text-neutral-500 dark:text-neutral-400">
-          {description}
+          {product?.description}
         </p>
 
         <div className="mt-3 flex items-center justify-between border-t border-dashed border-black/[.06] pt-3 dark:border-white/[.08]">
           <div>
             <div className="flex items-baseline gap-1.5">
               <p className="text-base font-bold text-neutral-900 dark:text-neutral-50">
-                ₹220
+                ₹{product?.base_price?.amount}
               </p>
-              <p className="text-xs text-neutral-400 line-through">₹280</p>
+              {product?.compare_at_price && (
+                  <p className="text-xs text-neutral-400 line-through">
+                    ₹{product.compare_at_price.amount}
+                  </p>
+                )}
             </div>
             <p className="text-xs text-neutral-400">20 mins</p>
           </div>
