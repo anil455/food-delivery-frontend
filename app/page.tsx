@@ -12,7 +12,7 @@ export default function Home() {
     <div className="flex min-h-full flex-1 flex-col bg-white dark:bg-black">
       <Header />
 
-      
+
        <Banner />
 
       <main className="flex-1">

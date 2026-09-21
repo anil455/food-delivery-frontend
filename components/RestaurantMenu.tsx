@@ -5,7 +5,8 @@ import ProductCard from "./ProductCard";
 import Container from "@/components/Container";
 import CategoryFilterToggle from "./CategoryFilterToggle";
 
-export default function RestaurantMenu({ categories, products, initialCategory }: { categories: any[]; products: any[]; initialCategory?: any }) {
+export default function RestaurantMenu({ categories, products, initialCategory, restaurantSlug }:
+     { categories: any[]; products: any[]; initialCategory?: any; restaurantSlug:any; }) {
   const [selectedCategoryId, setSelectedCategoryId]  = useState<any>(categories[0]?.id);
 
   const handleSelectCategory = (categoryId: any) => {
@@ -148,7 +149,7 @@ const [vegFilter, setVegFilter] = useState<"all" | "veg" | "nonveg">("all");
 
                     <div className="mt-4 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
                     {categoryProducts.map((product: any) => (
-                        <ProductCard key={product.id} product={product} />
+                        <ProductCard key={product.id} product={product} restaurantSlug={restaurantSlug} />
                     ))}
                     </div>
                 </div>

@@ -91,3 +91,18 @@ export async function getProducts(slug: any): Promise<any> {
     return [];
   }
 }
+
+
+
+
+export async function getProduct(restaurantSlug: any, productSlug: any): Promise<any> {
+  try {
+    const response = await fetch(`${BASE_URL}/restaurants/${restaurantSlug}/products/${productSlug}`);
+    if (!response.ok) throw new Error(`Product Request failed with status ${response.status}`);
+    const data = await response.json();
+    return data.data;   // isme addon_groups bhi hoga
+  } catch (error) {
+    console.log("Product fetch error:", error);
+    return null;
+  }
+}

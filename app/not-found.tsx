@@ -23,7 +23,7 @@ export default function NotFound() {
             href="/"
             className="mt-8 flex h-11 items-center gap-2 rounded-full bg-orange-600 px-6 text-sm font-semibold text-white transition-colors hover:bg-orange-700"
           >
-            Back to homepage
+            Go to homepage
           </Link>
         </Container>
       </main>

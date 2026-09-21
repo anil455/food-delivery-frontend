@@ -82,7 +82,7 @@ export default async function RestorentPage({params,}: {params: Promise<{ slug: 
         </Container>
       </div>
 
-      <RestaurantMenu categories={categoriesList} products={productsList} initialCategory={initialCategory} />
+      <RestaurantMenu categories={categoriesList} products={productsList} initialCategory={initialCategory} restaurantSlug={slug} />
 
 
       <Footer />

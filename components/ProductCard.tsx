@@ -1,6 +1,23 @@
-import { Flame, ImageIcon, Minus, Plus, Star } from "lucide-react";
+"use client";
 
-export default function ProductCard({product}: {product:any;}) {
+import { Flame, ImageIcon, Loader2, Plus, Star } from "lucide-react";
+import { useState } from "react";
+import ProductAddonModal from "./ProductAddonModal";
+import { getProduct } from "@/lib/api";
+
+export default function ProductCard({product, restaurantSlug}: {product:any; restaurantSlug:any}) {
+  const [isAddonOpen, setIsAddonOpen] = useState(false);
+  const [fullProduct, setFullProduct] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+
+  async function handleAddClick() {
+    setLoading(true);
+    const detail = await getProduct(restaurantSlug, product.slug);
+    setFullProduct(detail);
+    setLoading(false);
+    setIsAddonOpen(true);
+  }
+
   return (
     <div className="group overflow-hidden rounded-2xl border border-black/[.06] bg-white shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-xl dark:border-white/[.08] dark:bg-neutral-900">
       <div className="relative h-40 overflow-hidden bg-gradient-to-br from-neutral-100 to-neutral-200 dark:from-neutral-800 dark:to-neutral-900">
@@ -58,17 +75,26 @@ export default function ProductCard({product}: {product:any;}) {
             <p className="text-xs text-neutral-400">20 mins</p>
           </div>
 
-          <div className="flex items-center gap-3 rounded-full bg-orange-600 px-1 py-1 text-white shadow-sm shadow-orange-600/30">
-            <button className="flex h-6 w-6 items-center justify-center rounded-full hover:bg-white/20">
-              <Minus className="h-3.5 w-3.5" />
-            </button>
-            <span className="w-3 text-center text-sm font-semibold">1</span>
-            <button className="flex h-6 w-6 items-center justify-center rounded-full hover:bg-white/20">
-              <Plus className="h-3.5 w-3.5" />
-            </button>
-          </div>
+          <button onClick={handleAddClick} disabled={loading} className="flex h-8 w-[92px] items-center justify-center gap-1 rounded-full bg-orange-600 px-1 py-1 text-sm font-semibold text-white shadow-sm shadow-orange-600/30">
+            {loading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <>
+                ADD
+                <Plus className="h-3.5 w-3.5" />
+              </>
+            )}
+          </button>
         </div>
       </div>
+
+       {fullProduct && (
+        <ProductAddonModal
+          isOpen={isAddonOpen}
+          onClose={() => setIsAddonOpen(false)}
+          product={fullProduct}
+        />
+      )}
     </div>
   );
 }
