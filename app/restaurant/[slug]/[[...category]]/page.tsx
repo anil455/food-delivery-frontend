@@ -40,6 +40,10 @@ export default async function RestorentPage({params,}: {params: Promise<{ slug: 
     console.log("categories:", categoriesList);
     console.log("products:", productsList);
 
+    if (!restaurant) {
+        notFound();
+      }
+
     if (initialCategory) {
       const validCategory = categoriesList.find((c: any) => c.slug === initialCategory);
       if (!validCategory) {
