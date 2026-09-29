@@ -1,24 +1,55 @@
 "use client";
 
-import { Flame, ImageIcon, Loader2, Plus, Star } from "lucide-react";
+import { Flame, ImageIcon, Loader2, Minus, Plus, Star } from "lucide-react";
 import { useState } from "react";
 import ProductAddonModal from "./ProductAddonModal";
 import { getProduct } from "@/lib/api";
+import RepeatCustomizationModal from "./RepeatCustomizationModal";
 
 export default function ProductCard({product, restaurantSlug}: {product:any; restaurantSlug:any}) {
   const [isAddonOpen, setIsAddonOpen] = useState(false);
   const [fullProduct, setFullProduct] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
+  const [quantity, setQuantity] = useState(0);
+
+  const [lastSelection, setLastSelection] = useState<any>(null);
+  const [isRepeatOpen, setIsRepeatOpen] = useState(false);
+  
+
   async function handleAddClick() {
     setLoading(true);
     const detail = await getProduct(restaurantSlug, product.slug);
-    setFullProduct(detail);
     setLoading(false);
-    setIsAddonOpen(true);
+    if (detail.addon_groups && detail.addon_groups.length > 0) {
+      setFullProduct(detail);
+      setIsAddonOpen(true);
+    } else {
+      setQuantity((prev) => prev + 1);
+    }
   }
 
+  
+
+  function increment() {
+    setQuantity((prev) => prev + 1);
+  }
+
+  function decrement() {
+    setQuantity((prev) => Math.max(0, prev - 1));
+  }
+
+  function handlePlusClick() {
+  if (fullProduct) {
+    setIsRepeatOpen(true);
+  } else {
+    increment();
+  }
+}
+
+
   return (
+    <>
     <div className="group overflow-hidden rounded-2xl border border-black/[.06] bg-white shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-xl dark:border-white/[.08] dark:bg-neutral-900">
       <div className="relative h-40 overflow-hidden bg-gradient-to-br from-neutral-100 to-neutral-200 dark:from-neutral-800 dark:to-neutral-900">
         <div className="flex h-full items-center justify-center">
@@ -26,16 +57,13 @@ export default function ProductCard({product, restaurantSlug}: {product:any; res
         </div>
 
         <span
-          className={`absolute left-3 top-3 flex h-5 w-5 items-center justify-center rounded-md border-2 bg-white shadow-sm ${
-            product?.is_veg ? "border-green-600" : "border-red-600"
-          }`}
+          className={`absolute left-3 top-3 flex h-5 w-5 items-center justify-center rounded-md border-2 bg-white shadow-sm ${product?.is_veg ? "border-green-600" : "border-red-600"}`}
         >
           {product?.is_veg ? (
             <span className="h-2 w-2 rounded-full bg-green-600" />
           ) : (
             <span
-              className="h-0 w-0 border-x-[5px] border-b-[8px] border-x-transparent border-b-red-600"
-            />
+              className="h-0 w-0 border-x-[5px] border-b-[8px] border-x-transparent border-b-red-600" />
           )}
         </span>
 
@@ -67,34 +95,68 @@ export default function ProductCard({product, restaurantSlug}: {product:any; res
                 ₹{product?.base_price?.amount}
               </p>
               {product?.compare_at_price && (
-                  <p className="text-xs text-neutral-400 line-through">
-                    ₹{product.compare_at_price.amount}
-                  </p>
-                )}
+                <p className="text-xs text-neutral-400 line-through">
+                  ₹{product.compare_at_price.amount}
+                </p>
+              )}
             </div>
             <p className="text-xs text-neutral-400">20 mins</p>
           </div>
 
-          <button onClick={handleAddClick} disabled={loading} className="flex h-8 w-[92px] items-center justify-center gap-1 rounded-full bg-orange-600 px-1 py-1 text-sm font-semibold text-white shadow-sm shadow-orange-600/30">
-            {loading ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <>
-                ADD
+          {quantity === 0 ? (
+            <button
+              onClick={handleAddClick}
+              disabled={loading}
+              className="flex h-8 w-[92px] items-center justify-center gap-1 rounded-full bg-orange-600 px-1 py-1 text-sm font-semibold text-white shadow-sm shadow-orange-600/30"
+            >
+              {loading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <>
+                  ADD +
+                </>
+              )}
+            </button>
+          ) : (
+            <div className="flex h-8 w-[92px] items-center justify-between rounded-full bg-orange-600 px-2 text-white shadow-sm shadow-orange-600/30">
+              <button onClick={decrement} className="flex h-full items-center px-1">
+                <Minus className="h-3.5 w-3.5" />
+              </button>
+              <span className="text-sm font-semibold">{quantity}</span>
+              <button onClick={handlePlusClick} className="flex h-full items-center px-1">
                 <Plus className="h-3.5 w-3.5" />
-              </>
-            )}
-          </button>
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
-       {fullProduct && (
+      {fullProduct && (
         <ProductAddonModal
           isOpen={isAddonOpen}
           onClose={() => setIsAddonOpen(false)}
           product={fullProduct}
-        />
+          onAdd={(selection) => {
+            console.log("Added:", selection);
+            setLastSelection(selection);
+            increment();
+          } } />
       )}
     </div>
+    {isRepeatOpen && (<RepeatCustomizationModal 
+     isOpen={isRepeatOpen}
+     productName={product?.name}
+     total={lastSelection?.total || product?.base_price?.amount}
+     onClose={() => setIsRepeatOpen(false)}
+     onRepeat={() => {
+        increment();
+        setIsRepeatOpen(false);
+      }}
+      onAddNew={() => {
+        setIsRepeatOpen(false);
+        setIsAddonOpen(true);
+      }}
+     />)}
+    </>
   );
 }
